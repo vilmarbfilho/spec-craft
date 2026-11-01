@@ -1,6 +1,6 @@
 import { watch, type FSWatcher } from 'chokidar'
 import { readFile } from 'node:fs/promises'
-import { join, relative, sep } from 'node:path'
+import { join, normalize, relative, sep } from 'node:path'
 import { SPEC_FILE_KINDS, SPECS_DIR, type FsEvent, type SpecFileKind } from '@shared/types'
 import type { SpecService } from './spec-service'
 
@@ -25,17 +25,22 @@ export class SpecsWatcher {
 
   async start(root: string): Promise<void> {
     await this.stop()
+    root = normalize(root)
     const specsDir = join(root, SPECS_DIR)
     this.watcher = watch(root, {
       ignoreInitial: true,
       depth: 3,
       // Only the project root itself and anything under specs/ are relevant.
-      ignored: (path: string) =>
-        !(path === root || path === specsDir || path.startsWith(specsDir + sep)),
+      // chokidar hands matchers forward-slash paths even on Windows, so
+      // normalize to native separators before comparing.
+      ignored: (raw: string) => {
+        const path = normalize(raw)
+        return !(path === root || path === specsDir || path.startsWith(specsDir + sep))
+      },
       awaitWriteFinish: { stabilityThreshold: 120, pollInterval: 40 }
     })
     const watcher = this.watcher
-    watcher.on('all', (event, path) => this.queue(event as RawEvent, path))
+    watcher.on('all', (event, path) => this.queue(event as RawEvent, normalize(path)))
     watcher.on('error', (err) => console.error('[watcher]', err))
     // Resolve only once the initial scan is done; events before that are lost
     // (noticeably on Windows, where the scan is slower).
