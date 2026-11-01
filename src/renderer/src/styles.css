@@ -1,0 +1,218 @@
+@import 'tailwindcss';
+@import 'tw-animate-css';
+
+@custom-variant dark (&:is(.dark *));
+
+:root {
+  --radius: 0.6rem;
+  --background: oklch(1 0 0);
+  --foreground: oklch(0.16 0.01 270);
+  --card: oklch(1 0 0);
+  --card-foreground: oklch(0.16 0.01 270);
+  --popover: oklch(1 0 0);
+  --popover-foreground: oklch(0.16 0.01 270);
+  --primary: oklch(0.52 0.2 275);
+  --primary-foreground: oklch(0.98 0 0);
+  --secondary: oklch(0.96 0.005 270);
+  --secondary-foreground: oklch(0.2 0.01 270);
+  --muted: oklch(0.965 0.004 270);
+  --muted-foreground: oklch(0.5 0.015 270);
+  --accent: oklch(0.95 0.01 275);
+  --accent-foreground: oklch(0.2 0.01 270);
+  --destructive: oklch(0.58 0.22 27);
+  --border: oklch(0.91 0.006 270);
+  --input: oklch(0.89 0.006 270);
+  --ring: oklch(0.52 0.2 275);
+  --sidebar: oklch(0.975 0.004 270);
+  --success: oklch(0.6 0.15 155);
+  --warning: oklch(0.72 0.15 75);
+}
+
+.dark {
+  --background: oklch(0.155 0.006 270);
+  --foreground: oklch(0.96 0.003 270);
+  --card: oklch(0.19 0.006 270);
+  --card-foreground: oklch(0.96 0.003 270);
+  --popover: oklch(0.2 0.007 270);
+  --popover-foreground: oklch(0.96 0.003 270);
+  --primary: oklch(0.68 0.17 277);
+  --primary-foreground: oklch(0.14 0.01 270);
+  --secondary: oklch(0.25 0.008 270);
+  --secondary-foreground: oklch(0.96 0.003 270);
+  --muted: oklch(0.23 0.007 270);
+  --muted-foreground: oklch(0.68 0.012 270);
+  --accent: oklch(0.26 0.02 275);
+  --accent-foreground: oklch(0.96 0.003 270);
+  --destructive: oklch(0.65 0.2 25);
+  --border: oklch(0.28 0.008 270);
+  --input: oklch(0.31 0.008 270);
+  --ring: oklch(0.68 0.17 277);
+  --sidebar: oklch(0.13 0.006 270);
+  --success: oklch(0.7 0.15 155);
+  --warning: oklch(0.8 0.14 80);
+}
+
+@theme inline {
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-sidebar: var(--sidebar);
+  --color-success: var(--success);
+  --color-warning: var(--warning);
+  --font-sans: ui-sans-serif, -apple-system, BlinkMacSystemFont, 'Segoe UI', Inter, Roboto, sans-serif;
+  --font-mono: ui-monospace, 'SF Mono', 'JetBrains Mono', Menlo, Consolas, monospace;
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  html,
+  body,
+  #root {
+    @apply h-full overflow-hidden;
+  }
+  body {
+    @apply bg-background text-foreground font-sans antialiased select-none;
+  }
+  input,
+  textarea,
+  .ProseMirror {
+    @apply select-text;
+  }
+}
+
+/* Draggable title-bar region (macOS hiddenInset). */
+.app-drag {
+  -webkit-app-region: drag;
+}
+.app-no-drag {
+  -webkit-app-region: no-drag;
+}
+
+/* ------------------------------------------------------------------ editor */
+.ProseMirror {
+  @apply outline-none min-h-full pb-32 text-[15px] leading-7;
+}
+.ProseMirror > * + * {
+  @apply mt-3;
+}
+.ProseMirror h1 {
+  @apply text-3xl font-bold tracking-tight mt-8 mb-2;
+}
+.ProseMirror h2 {
+  @apply text-xl font-semibold tracking-tight mt-8 mb-1 pb-1 border-b;
+}
+.ProseMirror h3 {
+  @apply text-lg font-semibold mt-6;
+}
+.ProseMirror > :first-child {
+  @apply mt-0;
+}
+.ProseMirror ul:not([data-type='taskList']) {
+  @apply list-disc pl-6;
+}
+.ProseMirror ol {
+  @apply list-decimal pl-6;
+}
+.ProseMirror li > p {
+  @apply my-0;
+}
+.ProseMirror li + li {
+  @apply mt-1;
+}
+.ProseMirror a {
+  @apply text-primary underline underline-offset-2;
+}
+.ProseMirror code {
+  @apply rounded bg-muted px-1.5 py-0.5 font-mono text-[0.85em];
+}
+.ProseMirror pre {
+  @apply rounded-lg border bg-muted/60 p-4 font-mono text-[13px] leading-6 overflow-x-auto;
+}
+.ProseMirror pre code {
+  @apply bg-transparent p-0 text-inherit;
+}
+.ProseMirror blockquote {
+  @apply border-l-4 border-border pl-4 text-muted-foreground;
+}
+.ProseMirror hr {
+  @apply my-6 border-border;
+}
+.ProseMirror table {
+  @apply w-full border-collapse text-sm;
+}
+.ProseMirror th,
+.ProseMirror td {
+  @apply border px-2 py-1 text-left;
+}
+
+/* Task lists (interactive checkboxes) */
+.ProseMirror ul[data-type='taskList'] {
+  @apply list-none pl-0;
+}
+.ProseMirror ul[data-type='taskList'] ul[data-type='taskList'] {
+  @apply pl-7 mt-1;
+}
+.ProseMirror ul[data-type='taskList'] > li {
+  @apply flex items-start gap-2.5;
+}
+.ProseMirror ul[data-type='taskList'] > li > label {
+  @apply mt-[5px] flex-none select-none;
+}
+.ProseMirror ul[data-type='taskList'] > li > label input[type='checkbox'] {
+  @apply size-4 cursor-pointer accent-primary;
+}
+.ProseMirror ul[data-type='taskList'] > li > div {
+  @apply flex-1 min-w-0;
+}
+.ProseMirror ul[data-type='taskList'] > li[data-checked='true'] > div > p {
+  @apply text-muted-foreground line-through decoration-muted-foreground/60;
+}
+
+/* Callouts: GitHub-style alerts (> [!NOTE]) detected by the Callout extension */
+.ProseMirror blockquote.callout {
+  @apply rounded-r-lg border-l-4 py-2 pr-3 text-foreground;
+}
+.ProseMirror blockquote.callout-note {
+  @apply border-sky-500 bg-sky-500/8;
+}
+.ProseMirror blockquote.callout-tip {
+  @apply border-emerald-500 bg-emerald-500/8;
+}
+.ProseMirror blockquote.callout-important {
+  @apply border-violet-500 bg-violet-500/8;
+}
+.ProseMirror blockquote.callout-warning {
+  @apply border-amber-500 bg-amber-500/10;
+}
+.ProseMirror blockquote.callout-caution {
+  @apply border-red-500 bg-red-500/8;
+}
+.ProseMirror .callout-marker {
+  @apply text-xs font-semibold uppercase tracking-wider opacity-70;
+}
+
+.ProseMirror p.is-editor-empty:first-child::before {
+  content: attr(data-placeholder);
+  @apply text-muted-foreground/70 float-left h-0 pointer-events-none;
+}
