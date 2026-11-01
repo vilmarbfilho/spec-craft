@@ -10,7 +10,11 @@ files:
 asar: true
 mac:
   category: public.app-category.developer-tools
-  target: [dmg, zip]
+  target:
+    - target: dmg
+      arch: [x64, arm64]
+    - target: zip
+      arch: [x64, arm64]
 win:
   target: [nsis]
 nsis:
@@ -19,4 +23,10 @@ nsis:
 linux:
   category: Development
   target: [AppImage, deb]
-publish: null
+  maintainer: Vilmar Bispo Filho <vilmarbf.ads@gmail.com>
+artifactName: ${productName}-${version}-${os}-${arch}.${ext}
+publish:
+  provider: github
+  owner: vilmarbfilho
+  repo: spec-craft
+  releaseType: draft

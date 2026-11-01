@@ -33,6 +33,19 @@ editor that saves plain Markdown, and export granular prompts for AI coding agen
 | `npm run build` | Typecheck + production build to `out/` |
 | `npm run dist` / `dist:mac` / `dist:win` / `dist:linux` | Package installers with electron-builder into `dist/` |
 
+### Releases
+
+Pushing a `v*` tag runs `.github/workflows/release.yml`, which builds macOS (dmg/zip, x64 + arm64),
+Windows (NSIS) and Linux (AppImage/deb) installers and uploads them to a **draft** GitHub Release.
+The tag must match `version` in `package.json`:
+
+```sh
+npm version patch        # bumps package.json and creates the tag, e.g. v0.1.1
+git push --follow-tags
+```
+
+Then review the draft on GitHub and click **Publish release**. Builds are currently unsigned.
+
 > npm ≥ 11 blocks install scripts by default; `package.json` already allows the ones `electron`
 > needs to download its binary. If `node_modules/electron/dist` is missing, run `npm approve-scripts electron`.
 
