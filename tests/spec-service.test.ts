@@ -1,4 +1,4 @@
-import { afterEach, beforeEach, describe, expect, it } from 'vitest'
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { mkdtemp, readFile, rename, rm, writeFile, mkdir } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
@@ -131,30 +131,26 @@ describe('SpecsWatcher', () => {
     const events: FsEvent[] = []
     const watcher = new SpecsWatcher(service, (e) => events.push(e))
     await watcher.start(root)
-    await new Promise((r) => setTimeout(r, 300))
-    const wait = () => new Promise((r) => setTimeout(r, 700))
+    // Poll instead of fixed sleeps: file events are much slower on Windows CI.
+    const until = (check: () => void) => vi.waitFor(check, { timeout: 5000, interval: 50 })
 
     const file = await service.readSpecFile('auth-service', 'tasks')
     await service.writeSpecFile({ slug: 'auth-service', kind: 'tasks', body: '- [x] self', expectedMtimeMs: file.mtimeMs })
-    await wait()
+    await until(() => expect(events.some((e) => e.type === 'specs-changed')).toBe(true))
     expect(events.some((e) => e.type === 'file-changed')).toBe(false)
-    expect(events.some((e) => e.type === 'specs-changed')).toBe(true)
 
     events.length = 0
     await writeFile(join(root, 'specs/auth-service/tasks.md'), '- [ ] external\n')
-    await wait()
-    expect(events).toContainEqual({ type: 'file-changed', slug: 'auth-service', kind: 'tasks' })
+    await until(() => expect(events).toContainEqual({ type: 'file-changed', slug: 'auth-service', kind: 'tasks' }))
 
     events.length = 0
     await rm(join(root, 'specs/auth-service/design.md'))
-    await wait()
-    expect(events).toContainEqual({ type: 'file-removed', slug: 'auth-service', kind: 'design' })
+    await until(() => expect(events).toContainEqual({ type: 'file-removed', slug: 'auth-service', kind: 'design' }))
 
     events.length = 0
     await rename(join(root, 'specs/auth-service'), join(root, 'specs/auth'))
-    await wait()
-    expect(events.some((e) => e.type === 'specs-changed')).toBe(true)
-    expect((await service.getState()).specs.map((s) => s.slug)).toEqual(['auth'])
+    await until(() => expect(events.some((e) => e.type === 'specs-changed')).toBe(true))
+    await until(async () => expect((await service.getState()).specs.map((s) => s.slug)).toEqual(['auth']))
     await watcher.stop()
-  }, 15000)
+  }, 30000)
 })

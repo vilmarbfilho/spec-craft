@@ -34,8 +34,12 @@ export class SpecsWatcher {
         !(path === root || path === specsDir || path.startsWith(specsDir + sep)),
       awaitWriteFinish: { stabilityThreshold: 120, pollInterval: 40 }
     })
-    this.watcher.on('all', (event, path) => this.queue(event as RawEvent, path))
-    this.watcher.on('error', (err) => console.error('[watcher]', err))
+    const watcher = this.watcher
+    watcher.on('all', (event, path) => this.queue(event as RawEvent, path))
+    watcher.on('error', (err) => console.error('[watcher]', err))
+    // Resolve only once the initial scan is done; events before that are lost
+    // (noticeably on Windows, where the scan is slower).
+    await new Promise<void>((resolve) => watcher.once('ready', () => resolve()))
   }
 
   async stop(): Promise<void> {
